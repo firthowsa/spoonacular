@@ -1,9 +1,12 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:go_router/go_router.dart';
-import 'package:spoonacular/src/domain/models/response/menu_item.dart';
 
-import '../../presentation/views/MenuItemView.dart';
+import '../../domain/models/response/menu_item.dart';
+import '../../presentation/views/cart_view.dart';
+import '../../presentation/views/menu_item_details.dart';
+import '../../presentation/views/menu_item_screen.dart';
+import '../../presentation/views/success_screen.dart';
 
 
 final GoRouter router = GoRouter(
@@ -11,20 +14,30 @@ final GoRouter router = GoRouter(
     GoRoute(
       path: '/',
       builder: (BuildContext context, GoRouterState state) {
-        return   const MenuItemView();
+        return   const MenuItemScreen();
       },
       routes: <RouteBase>[
 
 
-        // GoRoute(
-        //     path: 'MenuItemDetailsView',
-        //     builder:(BuildContext context, GoRouterState state) => MenuItemDetailsView(product: state.extra as MenuItem)
-        //
-        // ),
+        GoRoute(
+            path: 'MenuItemDetails',
+            builder:(BuildContext context, GoRouterState state) => MenuItemDetails(menuItem: state.extra as MenuItem)
+
+        ),
 
         GoRoute(
-            path: 'MenuItemView',
-            builder:(BuildContext context, GoRouterState state) => const MenuItemView()
+            path: 'MenuItemScreen',
+            builder:(BuildContext context, GoRouterState state) => const MenuItemScreen()
+
+        ),
+        GoRoute(
+            path: 'CartScreen',
+            builder:(BuildContext context, GoRouterState state) => const CartScreen()
+
+        ),
+        GoRoute(
+            path: 'SuccessScreen',
+            builder:(BuildContext context, GoRouterState state) => const SuccessScreen()
 
         ),
 

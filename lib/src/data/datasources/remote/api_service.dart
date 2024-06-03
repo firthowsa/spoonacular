@@ -10,7 +10,7 @@ part 'api_service.g.dart';
 abstract class ApiService {
   factory ApiService(Dio dio, {String baseUrl}) = _ApiService;
 //abstracted method that would be responsible of getting the data from the server,
-  @GET('menuItems/search')
+  @GET('/menuItems/search')
   Future<HttpResponse<MenuItemResponse>> getMenuItems({
     @Query("apiKey") String? apiKey,
     @Query("query") String? query,

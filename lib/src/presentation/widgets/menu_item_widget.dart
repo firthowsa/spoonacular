@@ -1,5 +1,11 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:oktoast/oktoast.dart';
 import 'package:spoonacular/src/domain/models/response/menu_item.dart';
+
+import '../../data/datasources/local/isar_service.dart';
+
+
 
 
 class MenuItemWidget extends StatelessWidget {
@@ -7,6 +13,9 @@ class MenuItemWidget extends StatelessWidget {
   final bool isRemovable;
   final void Function(MenuItem menuItem)? onRemove;
   final void Function(MenuItem menuItem)? onMenuItemPressed;
+  final void Function(MenuItem menuItem)? onAddToCart;
+
+
 
   const MenuItemWidget({
     super.key,
@@ -14,10 +23,13 @@ class MenuItemWidget extends StatelessWidget {
     this.onMenuItemPressed,
     this.isRemovable = false,
     this.onRemove,
+    this.onAddToCart,
+
   });
 
   @override
   Widget build(BuildContext context) {
+
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
       onTap: _onTap,
@@ -34,6 +46,7 @@ class MenuItemWidget extends StatelessWidget {
               children: [
                 _buildImage(context),
                 _buildTitleAndDescription(),
+                //_buildAddToCartButton(context),
                 _buildRemovableArea(),
               ],
             ),
@@ -47,67 +60,76 @@ class MenuItemWidget extends StatelessWidget {
     return ClipRRect(
       borderRadius: BorderRadius.circular(20.0),
       child: Container(
-        // width: MediaQuery.of(context).size.width / 3,
         height: 180,
         width: 400,
-
-        // height: double.maxFinite,
         decoration: BoxDecoration(
           color: Colors.black.withOpacity(0.08),
         ),
-        child: Image.network(
-          menuItem.image ?? '',
+        child: CachedNetworkImage(
+          imageUrl: menuItem.image,
           fit: BoxFit.cover,
-          errorBuilder: (_, __, ___) {
-            return const Center(
-              child: Text(
-                '404\nNOT FOUND',
-                textAlign: TextAlign.center,
-              ),
-            );
-          },
+          placeholder: (context, url) => const Center(
+            child: CircularProgressIndicator(),
+          ),
+          errorWidget: (context, url, error) => const Center(
+            child: Text(
+              'Pizza\nPIZZA',
+              textAlign: TextAlign.center,
+            ),
+          ),
         ),
       ),
     );
   }
 
   Widget _buildTitleAndDescription() {
+    final isarService = IsarService(); // Assuming an instance of IsarService
+
     return Expanded(
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 8),
-        // padding: const EdgeInsetsDirectional.only(
-        //     start: 14, end: 14,  top: 7),
         child: Column(
-          mainAxisSize: MainAxisSize.min,
+          mainAxisSize: MainAxisSize.max,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Title
             Expanded(
               child: Text(
-                menuItem.title ?? '',
+                menuItem.title,
                 maxLines: 3,
                 overflow: TextOverflow.ellipsis,
                 style: const TextStyle(
                   fontFamily: 'Butler',
                   fontWeight: FontWeight.w900,
-                  fontSize: 22,
-
+                  fontSize: 16,
                 ),
               ),
             ),
-
             Row(
-              //mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 const SizedBox(width: 4),
                 Text(
-                  menuItem.restaurantChain ?? '',
+                  menuItem.restaurantChain ,
                   style: const TextStyle(
                     fontSize: 16,
                   ),
                 ),
               ],
             ),
+      FilledButton(
+        onPressed: (){
+          isarService.addToCart(menuItem, 20.0, 1);
+          showToast('Added To Cart Successfully');
+
+        },        child: const Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.add_shopping_cart),
+            SizedBox(width: 8),
+            Text('Add to Cart'),
+          ],
+        ),
+      )
           ],
         ),
       ),
@@ -138,4 +160,5 @@ class MenuItemWidget extends StatelessWidget {
       onRemove?.call(menuItem);
     }
   }
+
 }

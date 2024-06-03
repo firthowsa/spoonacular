@@ -43,7 +43,7 @@ class _ApiService implements ApiService {
     )
             .compose(
               _dio.options,
-              'menuItems/search',
+              '/menuItems/search',
               queryParameters: queryParameters,
               data: _data,
             )
